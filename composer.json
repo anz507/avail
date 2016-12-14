@@ -1,0 +1,25 @@
+{
+    "name": "anzware/avail",
+    "description": "An API based availability calendar for Laravel 4.2",
+    "keywords": ["laravel", "availability", "calendar"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ahmad Anshori",
+            "email": "anz507@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Anzware\\Avail\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
