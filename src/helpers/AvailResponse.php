@@ -13,28 +13,28 @@ class AvailResponse
      *
      * @var int
      */
-    protected $code;
+    public $code;
 
     /**
      * Status of the response
      *
      * @var string
      */
-    protected $status;
+    public $status;
 
     /**
      * Response message
      *
      * @var string
      */
-    protected $message;
+    public $message;
 
     /**
      * The response data
      *
      * @var mixed
      */
-    protected $data;
+    public $data;
 
     /**
      * Creating default value for properties
