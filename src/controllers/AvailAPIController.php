@@ -21,12 +21,16 @@ class AvailAPIController extends Controller
      * @param integer    `take`    (optional)    - the amount of months needed to be displayed (default: 3)
      * @author Ahmad Anshori <anz507@gmail.com>
      *
-     * @todo implement pagination
+     * @todo validator
      */
     public function getCalendar()
     {
         try {
+            $page = 1;
             $take = Input::get('take', 3);
+            $page = Input::get('page', 1) - 1;
+            $skip = ($take * $page);
+
             $calendarId = Input::get('calendar_id');
 
             // @todo: add validator here
@@ -34,18 +38,18 @@ class AvailAPIController extends Controller
             $calendar = array();
 
             $currentDate = Carbon::now();
-            $currentDateStartOfDay = Carbon::now()->startOfDay();
-            $currentDateStartOfMonth = Carbon::now()->startOfMonth();
-            $endDateEndOfMonth = Carbon::now()->startOfMonth()->addMonths($take-1)->endOfMonth();
+
+            $startingDateStartOfMonth = Carbon::now()->addMonths($skip)->startOfMonth();
+            $endDateEndOfMonth = Carbon::now()->addMonths($skip)->addMonths($take-1)->endOfMonth();
 
             // get all bookings within taken months
             $bookings = AVBooking::with('state')
-                ->where('calendar_date', '>=', $currentDateStartOfMonth)
+                ->where('calendar_date', '>=', $startingDateStartOfMonth)
                 ->where('calendar_date', '<=', $endDateEndOfMonth)
                 ->get();
 
             for ($m = 0; $m < $take; $m++) {
-                $month = Carbon::now()->startOfMonth()->addMonths($m);
+                $month = Carbon::now()->addMonths($skip)->startOfMonth()->addMonths($m);
                 $monthData = new \stdclass();
                 $monthData->name = $month->format('F');
                 $monthData->month = $month->month;
@@ -57,7 +61,7 @@ class AvailAPIController extends Controller
                     $day->day = $d;
                     $day->month = $month->month;
                     $day->year = $month->year;
-                    $day->stringDate = Carbon::now()->startOfMonth()->addMonths($m)->addDays($d-1)->toDateString();
+                    $day->stringDate = Carbon::now()->addMonths($skip)->startOfMonth()->addMonths($m)->addDays($d-1)->toDateString();
                     // check for today date
                     if ($currentDate->day === $d &&
                         $currentDate->month === $month->month &&
