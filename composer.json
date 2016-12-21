@@ -17,7 +17,8 @@
         "classmap": [
             "src/migrations",
             "src/controllers",
-            "src/helpers"
+            "src/helpers",
+            "src/models"
         ],
         "psr-0": {
             "Anzware\\Avail\\": "src/"
