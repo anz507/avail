@@ -37,6 +37,7 @@ $table->timestamps();
 `GET /avail/api/get-calendar`
 
 **Parameters**
+
 integer    `take`         (optional)    - the amount of months needed to be displayed (default: 3)
 
 integer    `page`         (optional)    - indicate the pagination starting from current month (default: 1)
