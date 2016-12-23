@@ -12,30 +12,70 @@ use Anzware\Avail\AVCalendar;
 use Anzware\Avail\AVState;
 use Input;
 use Validator;
+use Exception;
+use DB;
 
 class AvailAPIController extends Controller
 {
+    protected $calendar = NULL;
+
     /**
      * Method for getting the calendar
      *
-     * @param integer    `take`    (optional)    - the amount of months needed to be displayed (default: 3)
+     * @param integer    `take`         (optional)    - the amount of months needed to be displayed (default: 3)
+     * @param integer    `page`         (optional)    - indicate the pagination starting from current month (default: 1)
+     * @param integer    `calendar_id`  (required)    - the calendar ID
      * @author Ahmad Anshori <anz507@gmail.com>
      *
-     * @todo validator
      */
     public function getCalendar()
     {
+        $data = new AvailResponse();
         try {
-            $page = 1;
             $take = Input::get('take', 3);
-            $page = Input::get('page', 1) - 1;
-            $skip = ($take * $page);
-
+            $page = Input::get('page', 1);
             $calendarId = Input::get('calendar_id');
 
-            // @todo: add validator here
+            Validator::extend('check_calendar_id', function ($attribute, $value, $parameters) {
+                $calendar = AVCalendar::where('status', 'active')
+                    ->where('calendar_id', $value)
+                    ->first();
 
-            $calendar = array();
+                if (empty($calendar)) {
+                    return FALSE;
+                }
+
+                $this->calendar = $calendar;
+
+                return TRUE;
+            });
+
+            $validator = Validator::make(
+                array(
+                    'take' => $take,
+                    'page' => $page,
+                    'calendar_id' => $calendarId
+                ),
+                array(
+                    'take' => 'numeric',
+                    'page' => 'numeric',
+                    'calendar_id' => 'required|check_calendar_id'
+                ),
+                array(
+                    'check_calendar_id' => 'Calendar not found'
+                )
+            );
+
+            // Run the validation
+            if ($validator->fails()) {
+                $errorMessage = $validator->messages()->first();
+                throw new Exception($errorMessage, 1);
+            }
+
+            $page--;
+            $skip = ($take * $page);
+
+            $calendarData = array();
 
             $currentDate = Carbon::now();
 
@@ -44,6 +84,10 @@ class AvailAPIController extends Controller
 
             // get all bookings within taken months
             $bookings = AVBooking::with('state')
+                ->leftJoin('avail_calendars', function($q) use($calendarId) {
+                    $q->on('avail_calendars.calendar_id', '=', 'avail_bookings.calendar_id')
+                        ->on('avail_calendars.status', '=', DB::raw("'active'"));
+                })
                 ->where('calendar_date', '>=', $startingDateStartOfMonth)
                 ->where('calendar_date', '<=', $endDateEndOfMonth)
                 ->get();
@@ -83,13 +127,17 @@ class AvailAPIController extends Controller
                     $monthData->days[] = $day;
                 }
 
-                $calendar[$m] = $monthData;
+                $calendarData[$m] = $monthData;
             }
 
-            $data = new AvailResponse();
-            $data->data = $calendar;
-        } catch (Exception $e) {
+            $this->calendar->calendar_data = $calendarData;
 
+            $data->data = $this->calendar;
+        } catch (Exception $e) {
+            $data->code = 1;
+            $data->status = 'error';
+            $data->message = $e->getMessage();
+            $data->data = null;
         }
 
         return $data->render();
