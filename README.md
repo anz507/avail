@@ -34,6 +34,9 @@ $table->timestamps();
 ```
 
 ## APIs
+
+### Getting calendar with data
+
 `GET /avail/api/get-calendar-with-data`
 
 **Parameters**
@@ -44,17 +47,23 @@ integer    `page`         (optional)    - indicate the pagination starting from 
 
 integer    `calendar_id`  (required)    - the calendar ID
 
+### Getting calendar list
+
 `GET /avail/api/get-calendar`
 
 **Parameters**
 
 integer    `calendar_id`  (optional)    - the calendar ID
 
+### Getting state list
+
 `GET /avail/api/get-state`
 
 **Parameters**
 
 integer    `state_id`        (optional)    - the state ID
+
+### Creating new calendar
 
 `POST /avail/api/post-new-calendar`
 
@@ -63,6 +72,8 @@ integer    `state_id`        (optional)    - the state ID
 string    `name`         (required)    - the calendar name
 
 string    `status`       (required)    - calendar status ('active', 'inactive')
+
+### Update existing calendar
 
 `POST /avail/api/post-update-calendar`
 
@@ -74,6 +85,8 @@ string    `name`         (optional)    - the calendar name
 
 string    `status`       (optional)    - calendar status ('active', 'inactive')
 
+### Creating new state
+
 `POST /avail/api/post-new-state`
 
 **Parameters**
@@ -84,6 +97,8 @@ string    `name`         (optional)    - the calendar name
 
 string    `status`       (optional)    - calendar status ('active', 'inactive')
 
+### Update existing state
+
 `POST /avail/api/post-update-state`
 
 **Parameters**
@@ -93,6 +108,8 @@ integer   `state_id`     (required)    - the state ID
 string    `state`        (optional)    - the name of the state
 
 integer   `state_order`  (optional)    - the order of the state, for displaying purpose
+
+### Creating booking items
 
 `POST /avail/api/post-new-booking`
 
@@ -106,6 +123,7 @@ array     `dates`                 (required)    - selected dates
 
 string    `external_booking_id`   (optional)    - external booking ID (your actual booking detail ID)
 
+### Deleting booking items
 
 `POST /avail/api/post-release-booking`
 
