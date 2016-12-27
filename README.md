@@ -3,7 +3,14 @@ An API based availability calendar for Laravel 4.2
 
 Require Carbon\Carbon but already supplied by Laravel 4.2
 
+## Installation
+
+`composer require anzware/avail`
+
 ## avail schema
+
+run `php artisan migrate --package="anzware/avail"`
+
 **__avail_calendars__**
 ```
 $table->bigIncrements('calendar_id');
